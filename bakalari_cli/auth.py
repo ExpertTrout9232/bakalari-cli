@@ -1,6 +1,6 @@
 import requests
 import urllib.parse
-import cli
+from . import cli
 
 school_server = ""
 access_token = ""

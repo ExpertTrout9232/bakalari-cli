@@ -2,9 +2,9 @@ import sys
 import os
 from getpass import getpass
 from .auth import login
-from commands.user import user_info
-from commands.subjects import subjects
-from commands.absence import absence
+from .commands.user import user_info
+from .commands.subjects import subjects
+from .commands.absence import absence
 
 if sys.platform == "win32":
     import pyreadline as readline

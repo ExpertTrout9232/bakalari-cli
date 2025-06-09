@@ -1,8 +1,9 @@
 import requests
-from ..auth import try_auth, access_token, school_server
+from .. import auth
+from ..auth import try_auth
 
 def user_info():
-    if not access_token:
+    if not auth.access_token:
         return "You are not authenticated! Please login first."
     
     try:
@@ -10,8 +11,8 @@ def user_info():
     except:
         return "Authentication failed. Please log in again."
     
-    url = "https://" + school_server + "/api/3/user"
-    head = {"Content-Type": "application/x-www-form-urlencoded", "Authorization": f"Bearer {access_token}"}
+    url = "https://" + auth.school_server + "/api/3/user"
+    head = {"Content-Type": "application/x-www-form-urlencoded", "Authorization": f"Bearer {auth.access_token}"}
 
     response = requests.get(url, headers=head)
 
