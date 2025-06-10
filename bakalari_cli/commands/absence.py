@@ -1,4 +1,6 @@
 import requests
+from datetime import datetime
+import calendar
 from .. import auth
 from ..auth import try_auth
 
@@ -16,8 +18,8 @@ def absence():
     
     response = requests.get(url, headers=head)
     
+    output = f"""\nAbsence percentage: {int(response.json()["PercentageThreshold"]) * 100} %\n"""
     if input("Do you want to see absence of subjects? (y/n): ").lower() == "y":
-        output = "\nAbsence:\n"
         for i in response.json()["AbsencesPerSubject"]:
             output += f"""{i["SubjectName"]}:\n"""
             output += f"""- Total lessons: {i["LessonsCount"]}\n"""
@@ -26,6 +28,24 @@ def absence():
             output += f"""- Early dismissals: {i["Soon"]}\n"""
             output += f"""- School events: {i["School"]}\n"""
     else:
-        output = "\nAbsence:\n"
+        absences = {}
+
+        for i in response.json()["Absences"]:
+            month = calendar.month_name[datetime.fromisoformat(i["Date"]).month]
+            if month not in absences:
+                absences[month] = []
+            
+            absences[month].append(i)
+        
+        for month in absences:
+            output += f"\n{month}:\n"
+            for absence in absences[month]:
+                output += f"""- {datetime.fromisoformat(absence["Date"]).strftime("%m/%d/%Y")}:\n"""
+                output += f"""-- Unsolved: {absence["Unsolved"]}\n"""
+                output += f"""-- Excused: {absence["Ok"]}\n"""
+                output += f"""-- Missed lessons: {absence["Missed"]}\n"""
+                output += f"""-- Late arrivals: {absence["Late"]}\n"""
+                output += f"""-- Early dismissals: {absence["Soon"]}\n"""
+                output += f"""-- School events: {absence["School"]}\n"""
 
     return output
