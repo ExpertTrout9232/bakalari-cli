@@ -1,0 +1,18 @@
+[project]
+name = "bakalari-cli"
+version = "0.2.0"
+description = "CLI client for the Czech school system Bakalari"
+authors = [{ name="Vincenc Elias", email="vinca.ostravsky@gmail.com" }]
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "requests",
+    "pyreadline3; platform_system == 'Windows'"
+]
+
+[project.scripts]
+bakalari-cli = "bakalari_cli.cli:main"
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
