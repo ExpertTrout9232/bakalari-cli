@@ -1,7 +1,7 @@
 import sys
 import os
 from getpass import getpass
-from .auth import login
+from .auth import login, login_from_file, logout
 from .commands.user import user_info
 from .commands.subjects import subjects
 from .commands.absence import absence
@@ -13,7 +13,7 @@ else:
 
 user = "Not-Authenticated"
 
-commands = ["login", "user", "subjects", "absence", "exit", "clear", "help"]
+commands = ["login", "logout", "user", "subjects", "absence", "exit", "clear", "help"]
 
 def completer(text, state):
     options = [cmd for cmd in commands if cmd.startswith(text.lower())]
@@ -29,12 +29,14 @@ readline.parse_and_bind("tab: complete")
 def main():
     global user
 
-    if len(sys.argv) > 1 and len(sys.argv) != 4:
+    if login_from_file():
+        print(f"Logged in as {user}")
+    elif len(sys.argv) > 1 and len(sys.argv) != 4:
         raise ValueError("Usage: python -m bakalari_cli <server> <username> <password>")
     elif len(sys.argv) == 4:
         print(login(sys.argv[1], sys.argv[2], sys.argv[3]))
-    else:
-        print("Welcome to Bakalari-CLI!")
+    
+    print("Welcome to Bakalari-CLI!")
 
     while True:
         action = input(f"[Bakalari-CLI][{user}]> ").lower()
@@ -44,6 +46,8 @@ def main():
 
         if action == "login":
             print(login(input("Server: "), input("Username: "), getpass("Password: ")))
+        elif action == "logout":
+            print(logout())
         elif action == "user":
             print(user_info())
         elif action == "subjects":
@@ -66,7 +70,8 @@ def main():
 def help():
     output = """
 Bakalari-CLI Commands:
-LOGIN - Authenticates to the school server with credentials (Optional arguments: SERVER, USERNAME, PASSWORD)
+LOGIN - Authenticates to the school server with credentials
+LOGOUT - Log out of the app
 USER - Shows info about the authenticated user
 SUBJECTS - Displays a list of user's subjects with teachers
 ABSENCE - Displays user's absence records
