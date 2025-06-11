@@ -55,10 +55,20 @@ def refresh_login():
     head = {"Content-Type": "application/x-www-form-urlencoded"}
 
     response = requests.post(url, data=body, headers=head)
-
+    
     if response.status_code == 200:
         access_token = response.json()["access_token"]
         refresh_token = response.json()["refresh_token"]
+
+        tokens = {
+            "access_token": access_token,
+            "refresh_token": refresh_token,
+            "school_server": school_server,
+            "username": cli.user
+        }
+
+        with open("bakalari_cli/tokens.json", "w") as f:
+            json.dump(tokens, f)
     else:
         raise Exception("Failed to refresh authentication tokens.")
 
@@ -68,7 +78,7 @@ def try_auth():
     
     response = requests.get(url, headers=head)
 
-    if response.status_code == 401:
+    if response.status_code != 200:
         refresh_login()
 
 def logout():

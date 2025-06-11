@@ -5,6 +5,7 @@ from .auth import login, login_from_file, logout
 from .commands.user import user_info
 from .commands.subjects import subjects
 from .commands.absence import absence
+from .commands.marks import marks
 
 if sys.platform == "win32":
     import pyreadline as readline
@@ -13,7 +14,7 @@ else:
 
 user = "Not-Authenticated"
 
-commands = ["login", "logout", "user", "subjects", "absence", "exit", "clear", "help"]
+commands = ["login", "logout", "user", "subjects", "absence", "marks", "exit", "clear", "help"]
 
 def completer(text, state):
     options = [cmd for cmd in commands if cmd.startswith(text.lower())]
@@ -39,7 +40,7 @@ def main():
     print("Welcome to Bakalari-CLI!")
 
     while True:
-        action = input(f"[Bakalari-CLI][{user}]> ").lower()
+        action = input(f"[Bakalari-CLI][{user}]> ").lower().strip()
         
         if not action:
             continue
@@ -54,6 +55,8 @@ def main():
             print(subjects())
         elif action == "absence":
             print(absence())
+        elif action == "marks":
+            print(marks())
         elif action == "exit":
             print("See you later!")
             return
@@ -75,6 +78,7 @@ LOGOUT - Log out of the app
 USER - Shows info about the authenticated user
 SUBJECTS - Displays a list of user's subjects with teachers
 ABSENCE - Displays user's absence records
+MARKS - Displays user's marks
 CLEAR - Clears the screen
 HELP - Shows this help
 EXIT - Exits Bakalari-CLI

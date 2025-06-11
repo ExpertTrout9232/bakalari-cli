@@ -1,6 +1,6 @@
 import requests
-from datetime import datetime
 import calendar
+from datetime import datetime
 from .. import auth
 from ..auth import try_auth
 
