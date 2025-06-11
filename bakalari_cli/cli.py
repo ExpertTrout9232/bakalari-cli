@@ -7,25 +7,33 @@ from .commands.subjects import subjects
 from .commands.absence import absence
 from .commands.marks import marks
 
+commands = ["login", "logout", "user", "subjects", "absence", "marks", "exit", "clear", "help"]
+user = "Not-Authenticated"
+
 if sys.platform == "win32":
-    import pyreadline3 as readline
+    from prompt_toolkit import prompt
+    from prompt_toolkit.completion import WordCompleter
+
+    completer = WordCompleter(commands, ignore_case=True)
 else:
     import readline 
 
-user = "Not-Authenticated"
-
-commands = ["login", "logout", "user", "subjects", "absence", "marks", "exit", "clear", "help"]
-
-def completer(text, state):
-    options = [cmd for cmd in commands if cmd.startswith(text.lower())]
-
-    if state < len(options):
-        return options[state]
+def request_input(prompt_text):
+    if sys.platform == "win32":
+        return prompt(prompt_text, completer=completer)
     else:
-        return None
-    
-readline.set_completer(completer)
-readline.parse_and_bind("tab: complete")
+        def completer_readline(text, state):
+            options = [cmd for cmd in commands if cmd.startswith(text.lower())]
+
+            if state < len(options):
+                return options[state]
+            else:
+                return None
+
+        readline.set_completer(completer_readline)
+        readline.parse_and_bind("tab: complete")
+
+        return input(prompt_text)
 
 def main():
     global user
@@ -40,7 +48,7 @@ def main():
     print("Welcome to Bakalari-CLI!")
 
     while True:
-        action = input(f"[Bakalari-CLI][{user}]> ").lower().strip()
+        action = request_input(f"[Bakalari-CLI][{user}]> ").lower().strip()
         
         if not action:
             continue

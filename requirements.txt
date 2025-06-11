@@ -1,2 +1,2 @@
 requests
-pyreadline3; platform_system == "Windows"
+prompt_toolkit; platform_system == "Windows"
