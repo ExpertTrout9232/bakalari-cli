@@ -17,8 +17,8 @@ def absence():
     head = {"Content-Type": "application/x-www-form-urlencoded", "Authorization": f"Bearer {auth.access_token}"}
     
     response = requests.get(url, headers=head)
-    
-    output = f"""\nAbsence percentage: {int(response.json()["PercentageThreshold"]) * 100} %\n"""
+
+    output = f"""\nAbsence percentage: {float(response.json()["PercentageThreshold"]) * 100} %\n"""
     if input("Do you want to see absence of subjects? (y/n): ").lower() == "y":
         for i in response.json()["AbsencesPerSubject"]:
             output += f"""{i["SubjectName"]}:\n"""
@@ -38,7 +38,7 @@ def absence():
             absences[month].append(i)
         
         for month in absences:
-            output += f"\n{month}:\n"
+            output += f"{month}:\n"
             for absence in absences[month]:
                 output += f"""- {datetime.fromisoformat(absence["Date"]).strftime("%m/%d/%Y")}:\n"""
                 output += f"""-- Unsolved: {absence["Unsolved"]}\n"""

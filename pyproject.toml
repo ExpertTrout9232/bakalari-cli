@@ -1,6 +1,6 @@
 [project]
 name = "bakalari-cli"
-version = "0.3.2"
+version = "0.3.3.dev0"
 description = "CLI client for the Czech school system Bakalari"
 authors = [{ name="Vincenc Elias", email="vinca.ostravsky@gmail.com" }]
 readme = "README.md"
