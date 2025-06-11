@@ -8,7 +8,7 @@ from .commands.absence import absence
 from .commands.marks import marks
 
 if sys.platform == "win32":
-    import pyreadline as readline
+    import pyreadline3 as readline
 else:
     import readline 
 

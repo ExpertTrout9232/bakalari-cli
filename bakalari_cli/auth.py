@@ -1,14 +1,18 @@
 import requests
 import urllib.parse
 import json
+import os
 from . import cli
+
+TOKENS_PATH = os.path.join(os.path.dirname(__file__), "tokens.json")
 
 school_server = ""
 access_token = ""
 refresh_token = ""
+preserve_login = False
 
 def login(server, username, password):
-    global school_server, access_token, refresh_token
+    global school_server, access_token, refresh_token, preserve_login
 
     if len(server.split('/')) > 1:
         try:
@@ -33,6 +37,8 @@ def login(server, username, password):
         refresh_token = response.json()["refresh_token"]
 
         if input("Do you want to stay logged in? (y/n): ").lower() == "y":
+            preserve_login = True
+
             tokens = {
                 "access_token": access_token,
                 "refresh_token": refresh_token,
@@ -40,7 +46,7 @@ def login(server, username, password):
                 "username": cli.user
             }
 
-            with open("bakalari_cli/tokens.json", "w") as f:
+            with open(TOKENS_PATH, "w") as f:
                 json.dump(tokens, f)
 
         return "Authentification successful."
@@ -55,20 +61,21 @@ def refresh_login():
     head = {"Content-Type": "application/x-www-form-urlencoded"}
 
     response = requests.post(url, data=body, headers=head)
-    
+
     if response.status_code == 200:
         access_token = response.json()["access_token"]
         refresh_token = response.json()["refresh_token"]
 
-        tokens = {
-            "access_token": access_token,
-            "refresh_token": refresh_token,
-            "school_server": school_server,
-            "username": cli.user
-        }
+        if preserve_login == True:
+            tokens = {
+                "access_token": access_token,
+                "refresh_token": refresh_token,
+                "school_server": school_server,
+                "username": cli.user
+            }
 
-        with open("bakalari_cli/tokens.json", "w") as f:
-            json.dump(tokens, f)
+            with open(TOKENS_PATH, "w") as f:
+                json.dump(tokens, f)
     else:
         raise Exception("Failed to refresh authentication tokens.")
 
@@ -82,7 +89,9 @@ def try_auth():
         refresh_login()
 
 def logout():
-    global access_token, refresh_token, school_server
+    global access_token, refresh_token, school_server, preserve_login
+
+    preserve_login = False
 
     access_token = ""
     refresh_token = ""
@@ -90,16 +99,19 @@ def logout():
 
     cli.user = "Not-Authenticated"
 
-    with open("bakalari_cli/tokens.json", "w") as f:
-        json.dump({}, f)
+    try:
+        with open(TOKENS_PATH, "w") as f:
+            json.dump({}, f)
+    except:
+        pass
 
     return "Successfully logged out."
 
 def login_from_file():
-    global access_token, refresh_token, school_server
+    global access_token, refresh_token, school_server, preserve_login
 
     try:
-        with open("bakalari_cli/tokens.json", "r") as f:
+        with open(TOKENS_PATH, "r") as f:
             tokens = json.load(f)
             access_token = tokens.get("access_token", "")
             refresh_token = tokens.get("refresh_token", "")
@@ -115,6 +127,7 @@ def login_from_file():
         except:
             return False
         
+        preserve_login = True
         return True
     except:
         return False
